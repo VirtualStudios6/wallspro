@@ -1,0 +1,336 @@
+/* ============================
+   RESET & TOKENS
+   ============================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Remove web tap highlight on all category pages */
+* { -webkit-tap-highlight-color: transparent; }
+
+a, button, [role="button"], .gallery-img, .action-btn, .nav-item {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+:root {
+  --bg:        #111111;
+  --bg2:       #1a1a1a;
+  --bg3:       #222222;
+  --border:    rgba(255,255,255,0.08);
+  --text:      #ffffff;
+  --text2:     #aaaaaa;
+  --accent:    #c850c0;
+  --grad:      linear-gradient(135deg, #c850c0, #ffcc70);
+  --radius:    12px;
+  --radius-sm: 8px;
+  --nav-h:     56px;
+  --header-h:  52px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100dvh;
+  padding-top: var(--header-h);
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 12px);
+  overflow-x: hidden;
+}
+
+/* ============================
+   TOP BAR (páginas de categoría)
+   ============================ */
+.top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  background: #111111;
+  border-bottom: 1px solid var(--border);
+}
+
+.back-btn {
+  width: 36px; height: 36px;
+  border: none;
+  background: var(--bg3);
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.back-btn svg { width: 18px; height: 18px; }
+.back-btn:hover { background: #2a2a2a; }
+
+.page-title {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.count-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  background: var(--bg3);
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* ============================
+   GALLERY
+   ============================ */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 6px 4px;
+}
+
+@media (min-width: 480px) {
+  .gallery { grid-template-columns: repeat(4, 1fr); gap: 5px; }
+}
+@media (min-width: 700px) {
+  .gallery { grid-template-columns: repeat(5, 1fr); }
+}
+
+.gallery-img {
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+  background: var(--bg3);
+  opacity: 0;
+  transform: scale(0.97);
+  will-change: opacity, transform;
+  transition: opacity 0.35s ease, transform 0.2s ease;
+}
+.gallery-img.visible  { opacity: 1; transform: scale(1); }
+.gallery-img:hover    { transform: scale(1.03); }
+.gallery-img:active   { transform: scale(0.96); }
+
+/* ============================
+   LIGHTBOX
+   ============================ */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,0.97);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease;
+}
+.lightbox.active { opacity: 1; visibility: visible; }
+
+.lightbox-media {
+  width: auto; height: auto;
+  max-height: 78vh;
+  max-width: calc(100vw - 80px);
+  aspect-ratio: 9 / 16;
+  object-fit: contain;
+  border-radius: 12px;
+  opacity: 0;
+  transform: scale(0.94);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.lightbox.active .lightbox-media { opacity: 1; transform: scale(1); }
+
+.close-btn {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 38px; height: 38px;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  z-index: 10;
+  transition: background 0.2s;
+}
+.close-btn:hover { background: rgba(255,255,255,0.2); }
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px; height: 56px;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 22px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: background 0.2s;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.18); }
+.nav-btn.prev  { left: 8px; }
+.nav-btn.next  { right: 8px; }
+
+.actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.action-btn {
+  width: 50px; height: 50px;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.action-btn:hover  { background: rgba(255,255,255,0.2); transform: scale(1.08); }
+.action-btn:active { transform: scale(0.93); }
+.action-btn svg { width: 22px; height: 22px; fill: #fff; pointer-events: none; }
+
+#like-btn[aria-pressed="true"] svg { fill: #f43f5e; }
+#like-btn[aria-pressed="true"]     { background: rgba(244,63,94,0.2); }
+
+/* 4K button */
+.action-btn--4k { background: rgba(124,58,237,0.15); }
+.action-btn--4k:hover { background: rgba(124,58,237,0.28); }
+.action-btn--4k svg { fill: none; }
+
+/* Earn-coins bonus button */
+.action-btn--earn { background: rgba(167,139,250,0.1); }
+.action-btn--earn:hover { background: rgba(167,139,250,0.22); }
+.action-btn--earn svg { fill: none; }
+
+/* Nav badge */
+.nav-badge {
+  position: absolute;
+  top: 4px; right: 14px;
+  min-width: 16px; height: 16px;
+  background: #f43f5e; color: #fff;
+  font-size: 9px; font-weight: 700;
+  border-radius: 8px; padding: 0 4px;
+  display: grid; place-items: center;
+}
+
+.lightbox-counter {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+/* ============================
+   BOTTOM NAV
+   ============================ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  display: flex;
+  align-items: stretch;
+  background: rgba(17,17,17,0.95);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--text2);
+  font-size: 11px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.nav-item svg      { width: 22px; height: 22px; }
+.nav-item.active   { color: var(--accent); }
+.nav-item:not(.active):hover { color: var(--text); }
+
+/* ============================
+   TOAST
+   ============================ */
+.app-toast {
+  position: fixed;
+  bottom: calc(var(--nav-h) + 12px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: rgba(30,30,30,0.97);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 2000;
+}
+.app-toast--show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ============================
+   HAS-BANNER — category pages
+   ============================ */
+:root { --banner-h: 0px; }
+
+body.has-banner {
+  padding-bottom: calc(var(--nav-h) + var(--banner-h) + env(safe-area-inset-bottom) + 12px);
+}
+body.has-banner .bottom-nav {
+  bottom: var(--banner-h);
+}
+body.has-banner .app-toast {
+  bottom: calc(var(--nav-h) + var(--banner-h) + 12px + env(safe-area-inset-bottom));
+}
+
+/* ============================
+   SHARE button (injected by category.js)
+   ============================ */
+.action-btn--share { background: rgba(59,130,246,0.12); }
+.action-btn--share:hover { background: rgba(59,130,246,0.26); }
+.action-btn--share svg { fill: none; stroke: #93c5fd; stroke-width: 2; }

@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WallsPro — Analytics Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #07070f;
+      --bg2:       #0d0d18;
+      --bg3:       #13131e;
+      --card:      #17172a;
+      --border:    rgba(255,255,255,0.07);
+      --text:      #f0f0f8;
+      --text2:     #8080a0;
+      --accent:    #7c3aed;
+      --accent2:   #a855f7;
+      --green:     #22c55e;
+      --red:       #f43f5e;
+      --yellow:    #f59e0b;
+      --blue:      #3b82f6;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+      font-size: 13px;
+      padding: 24px 16px 60px;
+      min-height: 100dvh;
+    }
+
+    /* ── Header ── */
+    .dash-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    }
+    .dash-title { font-size: 20px; font-weight: 800; color: var(--text); }
+    .dash-subtitle { font-size: 12px; color: var(--text2); margin-top: 2px; }
+    .dash-actions { display: flex; gap: 8px; }
+    .btn {
+      padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer;
+      font-size: 12px; font-weight: 700; font-family: inherit;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.82; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-ghost   { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
+    .btn-danger  { background: rgba(244,63,94,0.15); color: var(--red); border: 1px solid rgba(244,63,94,0.25); }
+
+    /* ── Section wrapper ── */
+    .section { margin-bottom: 28px; }
+    .section-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      color: var(--text2); text-transform: uppercase;
+      margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ── Cards grid ── */
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 16px;
+    }
+    .card-label { font-size: 11px; color: var(--text2); font-weight: 600; }
+    .card-value {
+      font-size: 26px; font-weight: 900; color: var(--text);
+      margin-top: 4px; letter-spacing: -0.5px;
+    }
+    .card-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
+    .card--green  { border-color: rgba(34,197,94,0.25); }
+    .card--red    { border-color: rgba(244,63,94,0.25); }
+    .card--yellow { border-color: rgba(245,158,11,0.25); }
+    .card--purple { border-color: rgba(124,58,237,0.35); }
+    .card--green  .card-value { color: var(--green); }
+    .card--red    .card-value { color: var(--red); }
+    .card--yellow .card-value { color: var(--yellow); }
+    .card--purple .card-value { color: var(--accent2); }
+
+    /* ── Funnel ── */
+    .funnel { display: flex; flex-direction: column; gap: 6px; }
+    .funnel-step {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 14px;
+      display: grid; grid-template-columns: 1fr 90px 70px 80px;
+      align-items: center; gap: 8px;
+    }
+    .funnel-step-name { font-size: 12px; font-weight: 600; color: var(--text2); }
+    .funnel-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .funnel-bar {
+      flex: 1; height: 6px; background: rgba(255,255,255,0.06);
+      border-radius: 4px; overflow: hidden;
+    }
+    .funnel-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .funnel-count   { font-size: 13px; font-weight: 700; text-align: right; }
+    .funnel-rate    { font-size: 12px; text-align: right; }
+    .funnel-dropoff {
+      font-size: 11px; text-align: right;
+      padding: 2px 7px; border-radius: 20px;
+    }
+    .drop--low    { color: var(--green);  background: rgba(34,197,94,0.1); }
+    .drop--medium { color: var(--yellow); background: rgba(245,158,11,0.1); }
+    .drop--high   { color: var(--red);    background: rgba(244,63,94,0.12); }
+    .funnel-step-num { font-size: 10px; color: var(--text2); }
+
+    /* ── A/B table ── */
+    .ab-grid { display: flex; flex-direction: column; gap: 16px; }
+    .ab-exp {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px;
+    }
+    .ab-exp-title {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .ab-exp-hyp { font-size: 11px; color: var(--text2); margin-bottom: 10px; }
+    .ab-row {
+      display: grid; grid-template-columns: 90px 1fr 60px 60px 70px 90px;
+      gap: 8px; align-items: center; padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .ab-row:last-child { border-bottom: none; }
+    .ab-row-header { font-size: 10px; font-weight: 700; color: var(--text2); text-transform: uppercase; }
+    .ab-variant { font-weight: 700; }
+    .ab-bar-wrap { display: flex; align-items: center; gap: 6px; }
+    .ab-bar { flex: 1; height: 5px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+    .ab-bar-fill { height: 100%; border-radius: 4px; }
+    .ab-winner {
+      font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px;
+      background: rgba(34,197,94,0.12); color: var(--green);
+    }
+    .ab-loser {
+      font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px;
+      background: rgba(255,255,255,0.04); color: var(--text2);
+    }
+    .ab-sig {
+      font-size: 10px; padding: 2px 7px; border-radius: 20px;
+    }
+    .sig-yes { background: rgba(34,197,94,0.1); color: var(--green); }
+    .sig-no  { background: rgba(245,158,11,0.1); color: var(--yellow); }
+    .sig-low { background: rgba(255,255,255,0.04); color: var(--text2); }
+
+    /* ── Timeline ── */
+    .timeline {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .timeline-row {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 6px 0; border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+    .timeline-row:last-child { border-bottom: none; }
+    .timeline-ts { color: var(--text2); flex-shrink: 0; min-width: 85px; }
+    .timeline-event { color: var(--accent2); font-weight: 600; flex-shrink: 0; min-width: 200px; }
+    .timeline-params { color: var(--text2); font-size: 11px; word-break: break-all; }
+
+    /* ── Insights ── */
+    .insights { display: flex; flex-direction: column; gap: 10px; }
+    .insight {
+      background: var(--card); border-radius: 12px; padding: 14px 16px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .insight-icon {
+      width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+      display: grid; place-items: center; font-size: 16px;
+    }
+    .insight-body { flex: 1; }
+    .insight-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .insight-text  { font-size: 12px; color: var(--text2); line-height: 1.55; }
+    .insight-action {
+      margin-top: 8px; font-size: 11px; font-weight: 700;
+      color: var(--accent2); letter-spacing: 0.04em;
+    }
+    .insight--crit  { border: 1px solid rgba(244,63,94,0.25); }
+    .insight--warn  { border: 1px solid rgba(245,158,11,0.2); }
+    .insight--good  { border: 1px solid rgba(34,197,94,0.18); }
+    .insight--info  { border: 1px solid var(--border); }
+    .insight--crit .insight-icon { background: rgba(244,63,94,0.12); }
+    .insight--warn .insight-icon { background: rgba(245,158,11,0.1); }
+    .insight--good .insight-icon { background: rgba(34,197,94,0.1); }
+    .insight--info .insight-icon { background: rgba(124,58,237,0.12); }
+
+    /* ── Coin history ── */
+    .history-table {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+    }
+    .history-row {
+      display: grid; grid-template-columns: 90px 90px 1fr 90px;
+      padding: 9px 14px; gap: 8px; align-items: center;
+      border-bottom: 1px solid var(--border); font-size: 12px;
+    }
+    .history-row:last-child { border-bottom: none; }
+    .history-row.header { color: var(--text2); font-size: 10px; font-weight: 700; text-transform: uppercase; }
+    .earn { color: var(--green); font-weight: 700; }
+    .spend { color: var(--red); font-weight: 700; }
+
+    /* ── Empty state ── */
+    .empty {
+      text-align: center; padding: 40px 20px; color: var(--text2);
+      background: var(--card); border: 1px dashed var(--border); border-radius: 14px;
+    }
+    .empty-icon { font-size: 32px; margin-bottom: 10px; }
+    .empty-title { font-size: 14px; font-weight: 700; color: var(--text); }
+    .empty-sub { font-size: 12px; margin-top: 4px; }
+
+    /* ── Benchmark legend ── */
+    .bench {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;
+    }
+    .bench-item {
+      font-size: 10px; padding: 3px 9px; border-radius: 20px;
+      background: rgba(255,255,255,0.05); color: var(--text2);
+      border: 1px solid var(--border);
+    }
+    .bench-item b { color: var(--text); }
+
+    /* ── Canvas chart ── */
+    .chart-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .chart-wrap canvas { display: block; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+      padding: 10px 20px; font-size: 13px; font-weight: 600;
+      opacity: 0; transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none; z-index: 100; white-space: nowrap;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Nav ── */
+    .nav-tabs {
+      display: flex; gap: 4px; margin-bottom: 20px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 4px;
+    }
+    .nav-tab {
+      flex: 1; padding: 8px; border: none; border-radius: 9px;
+      background: transparent; color: var(--text2);
+      font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-tab.active { background: var(--card); color: var(--text); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    @media (max-width: 480px) {
+      .funnel-step { grid-template-columns: 1fr 60px 60px; }
+      .ab-row { grid-template-columns: 80px 1fr 50px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="dash-header">
+  <div>
+    <div class="dash-title">WallsPro Analytics</div>
+    <div class="dash-subtitle" id="dash-sub">Loading…</div>
+  </div>
+  <div class="dash-actions">
+    <button class="btn btn-ghost" onclick="exportJSON()">Export JSON</button>
+    <button class="btn btn-primary" onclick="refresh()">↻ Refresh</button>
+    <button class="btn btn-danger" onclick="confirmReset()">Reset Data</button>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="switchTab('overview')">Overview</button>
+  <button class="nav-tab" onclick="switchTab('funnels')">Funnels</button>
+  <button class="nav-tab" onclick="switchTab('ab')">A/B Tests</button>
+  <button class="nav-tab" onclick="switchTab('coins')">Coins</button>
+  <button class="nav-tab" onclick="switchTab('events')">Raw Events</button>
+  <button class="nav-tab" onclick="switchTab('insights')">Insights</button>
+</div>
+
+<!-- OVERVIEW -->
+<div class="tab-panel active" id="tab-overview">
+  <div class="section">
+    <div class="section-title">Key metrics</div>
+    <div class="cards" id="kpi-cards"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Activity (last 7 days)</div>
+    <div class="chart-wrap">
+      <canvas id="activity-chart" height="140"></canvas>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">Industry benchmarks</div>
+    <div class="bench">
+      <span class="bench-item">Rewarded completion <b>60–75%</b></span>
+      <span class="bench-item">Premium conversion <b>1–4%</b></span>
+      <span class="bench-item">4K modal → ad tap <b>35–50%</b></span>
+      <span class="bench-item">Interstitial CTR <b>2–5%</b></span>
+      <span class="bench-item">D1 retention <b>25–35%</b></span>
+      <span class="bench-item">Banner eCPM <b>0.20–0.80€</b></span>
+      <span class="bench-item">Rewarded eCPM <b>5–15€</b></span>
+    </div>
+  </div>
+</div>
+
+<!-- FUNNELS -->
+<div class="tab-panel" id="tab-funnels">
+  <div class="section">
+    <div class="section-title">4K unlock funnel</div>
+    <div class="funnel" id="funnel-4k"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Premium purchase funnel</div>
+    <div class="funnel" id="funnel-premium"></div>
+  </div>
+</div>
+
+<!-- A/B TESTS -->
+<div class="tab-panel" id="tab-ab">
+  <div class="section">
+    <div class="section-title">Experiment results</div>
+    <div class="ab-grid" id="ab-grid"></div>
+  </div>
+</div>
+
+<!-- COINS -->
+<div class="tab-panel" id="tab-coins">
+  <div class="section">
+    <div class="section-title">Coin economy</div>
+    <div class="cards" id="coin-cards"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Transaction history (last 30)</div>
+    <div class="history-table" id="coin-history"></div>
+  </div>
+</div>
+
+<!-- RAW EVENTS -->
+<div class="tab-panel" id="tab-events">
+  <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+    <input id="ev-filter" placeholder="Filter by event name…"
+      style="flex:1;min-width:180px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);
+             background:var(--bg3);color:var(--text);font-size:12px;font-family:inherit;outline:none;">
+    <select id="ev-limit"
+      style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);
+             background:var(--bg3);color:var(--text);font-size:12px;font-family:inherit;">
+      <option value="30">Last 30</option>
+      <option value="100">Last 100</option>
+      <option value="300">Last 300</option>
+    </select>
+  </div>
+  <div class="timeline" id="events-list"></div>
+</div>
+
+<!-- INSIGHTS -->
+<div class="tab-panel" id="tab-insights">
+  <div class="section">
+    <div class="section-title">Automated analysis</div>
+    <div class="insights" id="insights-list"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Recommended next A/B tests</div>
+    <div class="insights" id="next-experiments"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   DATA LOADING
+   ════════════════════════════════════════════════════════ */
+
+const KEYS = {
+  analytics: 'wallspro_analytics_v2',
+  ab:        'wallspro_ab_v1',
+  coins:     'wallspro_coins_v2',
+  premium:   'wallspro_premium_v2',
+  daily:     'wallspro_daily_v1',
+  dayCap:    'wallspro_day_cap_v1',
+  hdAtts:    'wallspro_hd_atts_v1',
+  rewarded:  'wallspro_rewarded_count_v1',
+  ref:       'wallspro_ref_code',
+};
+
+function loadLS(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+  catch { return fallback; }
+}
+
+function getData() {
+  return {
+    events:   loadLS(KEYS.analytics, []),
+    ab:       loadLS(KEYS.ab, {}),
+    coins:    loadLS(KEYS.coins, { balance: 0, history: [] }),
+    premium:  loadLS(KEYS.premium, { active: false }),
+    hdAtts:   parseInt(localStorage.getItem(KEYS.hdAtts) ?? '0'),
+    rewarded: parseInt(localStorage.getItem(KEYS.rewarded) ?? '0'),
+    daily:    localStorage.getItem(KEYS.daily),
+    ref:      localStorage.getItem(KEYS.ref),
+  };
+}
+
+/* ════════════════════════════════════════════════════════
+   HELPERS
+   ════════════════════════════════════════════════════════ */
+
+function pct(n, d) { return d > 0 ? Math.round((n / d) * 100) : 0; }
+function fmt(n)    { return n?.toLocaleString() ?? '0'; }
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  if (diff < 60000)    return Math.round(diff/1000) + 's ago';
+  if (diff < 3600000)  return Math.round(diff/60000) + 'm ago';
+  if (diff < 86400000) return Math.round(diff/3600000) + 'h ago';
+  return Math.round(diff/86400000) + 'd ago';
+}
+function fmtTime(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('es', { day:'2-digit', month:'2-digit' })
+       + ' ' + d.toLocaleTimeString('es', { hour:'2-digit', minute:'2-digit' });
+}
+
+/* Chi-squared p-value approx (2×2 table) */
+function chiSquaredPValue(a_conv, a_total, b_conv, b_total) {
+  if (a_total < 10 || b_total < 10) return null; // insufficient data
+  const a_fail = a_total - a_conv;
+  const b_fail = b_total - b_conv;
+  const N      = a_total + b_total;
+  const E_ac   = (a_conv + b_conv) * a_total / N;
+  const E_af   = (a_fail + b_fail) * a_total / N;
+  const E_bc   = (a_conv + b_conv) * b_total / N;
+  const E_bf   = (a_fail + b_fail) * b_total / N;
+  const chi2   = Math.pow(a_conv-E_ac,2)/E_ac + Math.pow(a_fail-E_af,2)/E_af
+               + Math.pow(b_conv-E_bc,2)/E_bc + Math.pow(b_fail-E_bf,2)/E_bf;
+  // Approximate p-value from chi2 (df=1)
+  // p < 0.05 if chi2 > 3.84; p < 0.01 if chi2 > 6.63
+  if (chi2 > 10.83) return '<0.001 ✓✓✓';
+  if (chi2 > 6.63)  return '<0.01 ✓✓';
+  if (chi2 > 3.84)  return '<0.05 ✓';
+  return 'ns';
+}
+
+function dropClass(rate) {
+  if (rate <= 25)  return 'drop--low';
+  if (rate <= 55)  return 'drop--medium';
+  return 'drop--high';
+}
+
+/* ════════════════════════════════════════════════════════
+   OVERVIEW
+   ════════════════════════════════════════════════════════ */
+
+function renderOverview(d) {
+  const evCount = ev => d.events.filter(e => e.event === ev).length;
+
+  const rewViews  = evCount('ad_rewarded_view');
+  const rewComps  = evCount('ad_rewarded_complete');
+  const rewRate   = pct(rewComps, rewViews);
+
+  const pwOpens   = evCount('premium_open');
+  const pwBuys    = evCount('premium_purchase');
+  const pwRate    = pct(pwBuys, pwOpens);
+
+  const hdAtts    = evCount('hd_unlock_attempt');
+  const hdComps   = evCount('hd_unlock_complete');
+  const hdRate    = pct(hdComps, hdAtts);
+
+  const totalCoins = d.coins.balance;
+  const isPremium  = d.premium?.active && (!d.premium.expiry || Date.now() < d.premium.expiry);
+
+  document.getElementById('dash-sub').textContent =
+    `${fmt(d.events.length)} events · ${d.events.length ? timeAgo(d.events[d.events.length-1].ts) + ' first event' : 'no data yet'} · session ${d.ab?.session || '–'}`;
+
+  const kpis = [
+    { label:'Rewarded Completion', value: rewViews ? rewRate+'%' : '–',
+      sub: `${rewComps}/${rewViews} ads`, cls: rewRate >= 60 ? 'green' : rewRate >= 40 ? 'yellow' : 'red' },
+    { label:'Premium Conversion',  value: pwOpens ? pwRate+'%' : '–',
+      sub: `${pwBuys}/${pwOpens} opens`, cls: pwRate >= 2 ? 'green' : pwRate >= 0.5 ? 'yellow' : 'red' },
+    { label:'4K Conversion',       value: hdAtts ? hdRate+'%' : '–',
+      sub: `${hdComps}/${hdAtts} attempts`, cls: hdRate >= 35 ? 'green' : hdRate >= 20 ? 'yellow' : 'red' },
+    { label:'Coin Balance',        value: fmt(totalCoins) + ' 🪙',
+      sub: `${d.hdAtts} HD attempts`, cls: totalCoins >= 50 ? 'green' : totalCoins >= 15 ? 'yellow' : 'red' },
+    { label:'Total Events',        value: fmt(d.events.length),
+      sub: d.daily ? 'Active today' : 'No session today', cls: 'purple' },
+    { label:'Rewarded Ads Watched',value: fmt(d.rewarded),
+      sub: isPremium ? '✦ Premium active' : 'Free user', cls: isPremium ? 'purple' : '' },
+  ];
+
+  document.getElementById('kpi-cards').innerHTML = kpis.map(k => `
+    <div class="card ${k.cls ? 'card--'+k.cls : ''}">
+      <div class="card-label">${k.label}</div>
+      <div class="card-value">${k.value}</div>
+      <div class="card-sub">${k.sub}</div>
+    </div>
+  `).join('');
+
+  renderActivityChart(d.events);
+}
+
+function renderActivityChart(events) {
+  const canvas = document.getElementById('activity-chart');
+  const ctx    = canvas.getContext('2d');
+  canvas.width  = canvas.parentElement.clientWidth;
+  canvas.height = 140;
+  const W = canvas.width, H = canvas.height;
+
+  // Build daily buckets for last 14 days
+  const days = 14;
+  const buckets = Array.from({length: days}, (_, i) => {
+    const d = new Date(); d.setDate(d.getDate() - (days-1-i)); return d.toDateString();
+  });
+  const dayMap = {};
+  buckets.forEach(b => dayMap[b] = 0);
+  events.forEach(ev => {
+    const k = new Date(ev.ts).toDateString();
+    if (dayMap[k] !== undefined) dayMap[k]++;
+  });
+  const vals   = buckets.map(b => dayMap[b]);
+  const maxVal = Math.max(1, ...vals);
+
+  ctx.clearRect(0,0,W,H);
+  const pad    = { t: 10, b: 24, l: 10, r: 10 };
+  const bW     = (W - pad.l - pad.r) / days;
+  const chartH = H - pad.t - pad.b;
+
+  vals.forEach((v, i) => {
+    const x   = pad.l + i * bW + bW * 0.1;
+    const bh  = (v / maxVal) * chartH;
+    const y   = pad.t + chartH - bh;
+    const w   = bW * 0.8;
+    const alpha = 0.2 + 0.8 * (v / maxVal);
+    ctx.fillStyle = `rgba(124,58,237,${alpha})`;
+    const r = Math.min(4, w/2);
+    ctx.beginPath();
+    ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y);
+    ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+bh);
+    ctx.lineTo(x,y+bh); ctx.lineTo(x,y+r);
+    ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+    ctx.fill();
+
+    if (v > 0) {
+      ctx.fillStyle = 'rgba(240,240,248,0.7)';
+      ctx.font = '9px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(v, x+w/2, y-3);
+    }
+
+    if (i % 2 === 0) {
+      const d = new Date(buckets[i]);
+      ctx.fillStyle = 'rgba(128,128,160,0.7)';
+      ctx.font = '9px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${d.getDate()}/${d.getMonth()+1}`, x+w/2, H-6);
+    }
+  });
+}
+
+/* ════════════════════════════════════════════════════════
+   FUNNELS
+   ════════════════════════════════════════════════════════ */
+
+const FUNNELS = {
+  '4K Unlock': [
+    { ev: 'hd_unlock_attempt',  label: '1. Modal opened' },
+    { ev: 'hd_ad_start',        label: '2. Tapped "Watch ad"' },
+    { ev: 'ad_rewarded_view',   label: '3. Ad loaded' },
+    { ev: 'ad_rewarded_complete', label: '4. Ad completed' },
+    { ev: 'hd_unlock_complete', label: '5. Download complete' },
+  ],
+  'Premium': [
+    { ev: 'premium_open',        label: '1. Paywall opened' },
+    { ev: 'premium_plan_select', label: '2. Plan selected' },
+    { ev: 'premium_cta_tap',     label: '3. Subscribe tapped' },
+    { ev: 'premium_purchase',    label: '4. Purchase complete' },
+  ],
+};
+
+const FUNNEL_COLORS = ['#7c3aed','#a855f7','#3b82f6','#22c55e','#f59e0b'];
+
+function renderFunnels(d) {
+  Object.entries(FUNNELS).forEach(([name, steps]) => {
+    const id  = name === '4K Unlock' ? 'funnel-4k' : 'funnel-premium';
+    const el  = document.getElementById(id);
+    const top = d.events.filter(e => e.event === steps[0].ev).length;
+
+    el.innerHTML = steps.map((step, i) => {
+      const count   = d.events.filter(e => e.event === step.ev).length;
+      const prev    = i === 0 ? count : d.events.filter(e => e.event === steps[i-1].ev).length;
+      const dropOff = i === 0 ? 0 : pct(prev - count, prev);
+      const fromTop = pct(count, top || 1);
+      const color   = FUNNEL_COLORS[i];
+
+      return `
+        <div class="funnel-step">
+          <div>
+            <div class="funnel-step-name">${step.label}</div>
+            <div class="funnel-bar-wrap" style="margin-top:5px">
+              <div class="funnel-bar">
+                <div class="funnel-bar-fill" style="width:${fromTop}%;background:${color}"></div>
+              </div>
+            </div>
+          </div>
+          <div class="funnel-count" style="color:${color}">${fmt(count)}</div>
+          <div class="funnel-rate" style="color:${color}">${fromTop}%</div>
+          <div class="funnel-dropoff ${dropClass(dropOff)}">
+            ${i === 0 ? '▲ top' : '▼ '+dropOff+'% drop'}
+          </div>
+        </div>
+      `;
+    }).join('');
+  });
+}
+
+/* ════════════════════════════════════════════════════════
+   A/B TESTS
+   ════════════════════════════════════════════════════════ */
+
+const AB_META = {
+  cta_4k: {
+    title: 'Primary CTA copy — 4K Modal',
+    hypothesis: 'Does "Desbloquear en HD" (quality framing) outperform "Ver anuncio" (free framing) for ad tap rate?',
+    metric: 'hd_ad_start',
+    denominator: 'hd_unlock_attempt',
+  },
+  coin_cost_hd: {
+    title: 'Coin cost for HD download',
+    hypothesis: 'Lower cost (10) → more coin payments. Higher cost (20) → more ad views. Which maximizes total revenue?',
+    metric: 'hd_unlock_complete',
+    denominator: 'hd_unlock_attempt',
+  },
+  paywall_emphasis: {
+    title: 'Paywall layout — Savings vs Features',
+    hypothesis: 'Does showing "you\'ve earned X coins watching ads" increase premium conversion?',
+    metric: 'premium_purchase',
+    denominator: 'premium_open',
+  },
+  paywall_threshold: {
+    title: 'Smart paywall trigger threshold',
+    hypothesis: 'Fire paywall after 1, 2, or 3 rewarded ads — which threshold converts best without hurting retention?',
+    metric: 'premium_purchase',
+    denominator: 'premium_open',
+  },
+};
+
+function renderAB(d) {
+  const events   = d.events;
+  const ab       = d.ab;
+  const grid     = document.getElementById('ab-grid');
+  const expKeys  = Object.keys(AB_META);
+
+  if (!events.length) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">⚗️</div><div class="empty-title">No experiment data yet</div><div class="empty-sub">Use the app to generate assignments</div></div>';
+    return;
+  }
+
+  grid.innerHTML = expKeys.map(expKey => {
+    const meta    = AB_META[expKey];
+    const current = ab[expKey];
+
+    // Group events by variant value stored in params
+    const variants = {};
+    events.forEach(ev => {
+      const v = ev.params?.[expKey];
+      if (v === undefined) return;
+      if (!variants[v]) variants[v] = { total: 0, conversions: 0 };
+      if (ev.event === meta.denominator) variants[v].total++;
+      if (ev.event === meta.metric)      variants[v].conversions++;
+    });
+
+    const varKeys = Object.keys(variants);
+    if (!varKeys.length) {
+      return `
+        <div class="ab-exp">
+          <div class="ab-exp-title">${meta.title} <span class="ab-loser">${current ? 'You: '+current : 'not assigned'}</span></div>
+          <div class="ab-exp-hyp">${meta.hypothesis}</div>
+          <div class="empty" style="padding:20px"><div class="empty-sub">No variant data yet — need more traffic</div></div>
+        </div>
+      `;
+    }
+
+    const maxRate   = Math.max(...varKeys.map(v => pct(variants[v].conversions, variants[v].total)));
+    const bestKey   = varKeys.find(v => pct(variants[v].conversions, variants[v].total) === maxRate) ?? varKeys[0];
+
+    const rows = varKeys.map(v => {
+      const { total, conversions } = variants[v];
+      const rate    = pct(conversions, total);
+      const isWin   = v === bestKey && varKeys.length > 1;
+      const isCurr  = String(v) === String(current);
+
+      // Chi-squared vs best other variant
+      let sigHtml   = '';
+      if (varKeys.length >= 2 && isWin) {
+        const other   = varKeys.find(x => x !== v);
+        const p       = chiSquaredPValue(conversions, total, variants[other].conversions, variants[other].total);
+        if (p === null)  sigHtml = '<span class="ab-sig sig-low">need data</span>';
+        else if (p === 'ns') sigHtml = '<span class="ab-sig sig-no">p=ns</span>';
+        else             sigHtml = `<span class="ab-sig sig-yes">p${p}</span>`;
+      }
+
+      return `
+        <div class="ab-row">
+          <span class="ab-variant" style="color:${isWin?'#22c55e':'#8080a0'}">${v}${isCurr?' ← you':''}</span>
+          <div class="ab-bar-wrap">
+            <div class="ab-bar">
+              <div class="ab-bar-fill" style="width:${maxRate?Math.round(rate/maxRate*100):0}%;
+                   background:${isWin?'#22c55e':'#8080a0'}"></div>
+            </div>
+          </div>
+          <span style="text-align:right;font-weight:700;color:${isWin?'#22c55e':'#8080a0'}">${rate}%</span>
+          <span style="color:#8080a0;text-align:right">${conversions}/${total}</span>
+          <span>${isWin && varKeys.length>1 ? '<span class="ab-winner">Winner</span>' : '<span class="ab-loser">—</span>'}</span>
+          <span>${sigHtml}</span>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="ab-exp">
+        <div class="ab-exp-title">
+          ${meta.title}
+          <span style="font-size:10px;color:#8080a0">metric: ${meta.metric}</span>
+        </div>
+        <div class="ab-exp-hyp">${meta.hypothesis}</div>
+        <div class="ab-row ab-row-header">
+          <span>Variant</span><span>Rate</span><span>%</span>
+          <span>n</span><span>Status</span><span>Significance</span>
+        </div>
+        ${rows}
+      </div>
+    `;
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════════════
+   COINS
+   ════════════════════════════════════════════════════════ */
+
+function renderCoins(d) {
+  const hist   = d.coins.history ?? [];
+  const earned = hist.filter(h => h.type==='earn').reduce((s,h)=>s+h.amount,0);
+  const spent  = hist.filter(h => h.type==='spend').reduce((s,h)=>s+h.amount,0);
+  const adEarns = hist.filter(h=>h.reason==='watched_ad').length;
+
+  document.getElementById('coin-cards').innerHTML = [
+    { label:'Balance',         value: fmt(d.coins.balance)+' 🪙', cls: '' },
+    { label:'Total Earned',    value: fmt(earned),                cls: 'green' },
+    { label:'Total Spent',     value: fmt(spent),                 cls: 'red' },
+    { label:'Ad Earn Events',  value: adEarns,                   cls: 'purple' },
+    { label:'HD Attempts',     value: d.hdAtts,                  cls: '' },
+    { label:'Rewarded Watched',value: d.rewarded,                cls: 'purple' },
+  ].map(k => `
+    <div class="card ${k.cls?'card--'+k.cls:''}">
+      <div class="card-label">${k.label}</div>
+      <div class="card-value">${k.value}</div>
+    </div>
+  `).join('');
+
+  const rows = hist.slice(0,30).map(h => `
+    <div class="history-row">
+      <span class="${h.type==='earn'?'earn':'spend'}">${h.type==='earn'?'+':'-'}${h.amount} 🪙</span>
+      <span style="color:#8080a0">${h.reason}</span>
+      <span style="color:#f0f0f8;font-weight:600">— — —</span>
+      <span style="color:#8080a0;text-align:right">${timeAgo(h.ts)}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('coin-history').innerHTML =
+    `<div class="history-row header"><span>Amount</span><span>Reason</span><span>Note</span><span>When</span></div>`
+    + (rows || '<div class="history-row"><span style="color:#8080a0">No transactions yet</span></div>');
+}
+
+/* ════════════════════════════════════════════════════════
+   RAW EVENTS
+   ════════════════════════════════════════════════════════ */
+
+function renderEvents(d) {
+  const filter = document.getElementById('ev-filter').value.toLowerCase();
+  const limit  = parseInt(document.getElementById('ev-limit').value);
+
+  const filtered = d.events
+    .filter(e => !filter || e.event.includes(filter))
+    .slice(0, limit);
+
+  const container = document.getElementById('events-list');
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty"><div class="empty-sub">No matching events</div></div>';
+    return;
+  }
+
+  container.innerHTML = filtered.map(ev => {
+    const p = { ...ev.params };
+    delete p.session;
+    const paramStr = Object.keys(p).length
+      ? Object.entries(p).map(([k,v])=>`${k}=${JSON.stringify(v)}`).join(' · ')
+      : '';
+    return `
+      <div class="timeline-row">
+        <span class="timeline-ts">${timeAgo(ev.ts)}</span>
+        <span class="timeline-event">${ev.event}</span>
+        <span class="timeline-params">${paramStr}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════════════
+   INSIGHTS ENGINE
+   ════════════════════════════════════════════════════════ */
+
+function renderInsights(d) {
+  const evCount = ev => d.events.filter(e => e.event === ev).length;
+  const insights = [];
+
+  const rewViews  = evCount('ad_rewarded_view');
+  const rewComps  = evCount('ad_rewarded_complete');
+  const rewSkips  = evCount('ad_rewarded_skip');
+  const rewRate   = pct(rewComps, rewViews);
+
+  const hdAtts    = evCount('hd_unlock_attempt');
+  const hdAdStart = evCount('hd_ad_start');
+  const hdComp    = evCount('hd_unlock_complete');
+  const hdClose   = evCount('hd_modal_close');
+
+  const pwOpens   = evCount('premium_open');
+  const pwClose   = evCount('premium_close');
+  const pwPlan    = evCount('premium_plan_select');
+  const pwCTA     = evCount('premium_cta_tap');
+  const pwBuy     = evCount('premium_purchase');
+
+  const isPremium = d.premium?.active && (!d.premium.expiry || Date.now() < d.premium.expiry);
+
+  if (d.events.length === 0) {
+    insights.push({ sev:'info', icon:'📊', title:'Waiting for data',
+      text:'Use the app normally. The dashboard auto-reads your localStorage. ' +
+           'You\'ll see metrics appear here within your first session.',
+      action: 'Tip: open any wallpaper category and try the 4K download button.' });
+  }
+
+  // ── Rewarded completion rate ──
+  if (rewViews >= 5) {
+    if (rewRate < 40) {
+      insights.push({ sev:'crit', icon:'⚠️', title:'Rewarded completion rate critical: '+rewRate+'%',
+        text:`Industry benchmark is 60–75%. You're at ${rewRate}% (${rewComps}/${rewViews}). `+
+             `At this rate you lose ${rewViews - rewComps} revenue events per ${rewViews} ad views. `+
+             `Root cause is almost always ad load failure or user frustration with ad length.`,
+        action:'ACTION: Check AdService logs for "error" events. Add a loading spinner before the ad plays. '
+             + 'Consider showing a "this ad is 30 seconds" message — expectation setting increases completions by ~12%.' });
+    } else if (rewRate >= 70) {
+      insights.push({ sev:'good', icon:'✅', title:'Rewarded completion rate healthy: '+rewRate+'%',
+        text:`${rewComps}/${rewViews} ads completed. You\'re above the 60-75% benchmark. `+
+             `This is your strongest revenue signal — expand rewarded ad entry points.`,
+        action:'ACTION: Add a "daily challenge: watch 3 ads, earn 50 coins" mechanic to increase sessions.' });
+    }
+  }
+
+  // ── 4K modal → ad tap drop-off ──
+  if (hdAtts >= 5) {
+    const modalTapRate = pct(hdAdStart, hdAtts);
+    const closeRate    = pct(hdClose, hdAtts);
+    if (modalTapRate < 30) {
+      insights.push({ sev:'crit', icon:'🎯', title:'4K modal → ad tap rate low: '+modalTapRate+'%',
+        text:`Only ${hdAdStart} of ${hdAtts} users who opened the 4K modal tapped "Watch ad". `+
+             `${hdClose} users (${closeRate}%) closed without action. `+
+             `This is your biggest revenue leak — users want 4K but aren't taking action. `+
+             `Either the friction is too high or the primary button isn't visually dominant enough.`,
+        action:'ACTION: Run A/B test — move the "GRATIS" tag to a larger badge above the headline, '
+             + 'not inside the button. Increase primary button height to 60px. '
+             + 'Add a subtle "Cargando anuncio..." animation to create commitment.' });
+    }
+    if (closeRate > 50) {
+      insights.push({ sev:'warn', icon:'🚪', title:'High modal abandonment: '+closeRate+'% close without action',
+        text:`${hdClose} users dismissed the 4K modal. This signals the modal appears too early `+
+             `(before the user is invested) or the offer isn\'t compelling at that moment.`,
+        action:'ACTION: Delay the 4K modal prompt until after the 3rd wallpaper view in a session, '
+             + 'not the 1st. Warm users convert 2-3x better than cold users.' });
+    }
+  }
+
+  // ── Premium funnel ──
+  if (pwOpens >= 3) {
+    const planRate  = pct(pwPlan, pwOpens);
+    const ctaRate   = pct(pwCTA, pwOpens);
+    const closeRate = pct(pwClose, pwOpens);
+    const buyRate   = pct(pwBuy, pwOpens);
+
+    if (pwPlan === 0 && pwOpens >= 3) {
+      insights.push({ sev:'crit', icon:'📋', title:'Zero plan interactions on paywall',
+        text:`${pwOpens} users opened the premium paywall but nobody tapped a plan. `+
+             `This means the plans are either invisible, confusing, or the user doesn\'t reach them `+
+             `(paywall is too long and requires scrolling).`,
+        action:'ACTION: Make the yearly plan pre-selected with a visible checkmark ring on load. '
+             + 'Reduce the perks grid to a single row. The subscribe button must be visible '
+             + 'without ANY scrolling on a 375px screen.' });
+    }
+
+    if (pwCTA >= 1 && pwBuy === 0) {
+      insights.push({ sev:'warn', icon:'💳', title:'CTA taps not converting to purchase',
+        text:`${pwCTA} users tapped "Subscribe" but 0 completed. This is a billing integration issue — `+
+             `the Google Play Billing dialog isn\'t being triggered. Currently Premium.activate() is called directly `+
+             `(simulation mode).`,
+        action:'ACTION: Integrate @capacitor-community/in-app-purchase-2. '
+             + 'Until then, add a toast after CTA tap: "Conectando con Play Store…" '
+             + 'so users know something is happening.' });
+    }
+
+    if (closeRate > 70) {
+      insights.push({ sev:'warn', icon:'💰', title:'Paywall close rate high: '+closeRate+'%',
+        text:`${pwClose} of ${pwOpens} paywall opens end in a close. `+
+             `Common causes: price shock, plan confusion, or the user never intended to buy `+
+             `(paywall triggered too early).`,
+        action:'ACTION: Add a "Maybe later" option that triggers a 24h reminder notification. '
+             + 'Test showing the monthly price first (€1,99) before the yearly. '
+             + 'Price anchoring: show "Normal: €23,99/year" crossed out above the €11,99 price.' });
+    }
+  }
+
+  // ── Coin economy ──
+  const balance = d.coins.balance;
+  if (balance === 0 && d.events.length > 10) {
+    insights.push({ sev:'warn', icon:'🪙', title:'User has 0 coins despite activity',
+      text:`The user has browsed ${evCount('wallpaper_viewed')} wallpapers but has no coins. `+
+           `Either daily bonus failed to fire, or they\'ve spent everything. `+
+           `Users at 0 coins are most likely to churn — they have nothing invested.`,
+      action:'ACTION: Add a "You\'re out of coins! Watch an ad to earn 10 now" prompt '
+           + 'triggered when balance drops to 0. This is a retention lever, not a monetization one.' });
+  }
+
+  // ── Session depth ──
+  const views = evCount('wallpaper_viewed');
+  const downloads = evCount('wallpaper_downloaded');
+  if (views >= 20 && downloads === 0) {
+    insights.push({ sev:'info', icon:'👁️', title:'High view count, zero downloads',
+      text:`${views} wallpapers viewed but no downloads. The user is browsing but not converting. `+
+           `This is a discovery/intent mismatch — they like looking but haven\'t found "the one".`,
+      action:'ACTION: Show a "Save to favorites ♥" prompt after the 10th view. '
+           + 'Saved wallpapers create re-engagement hooks.' });
+  }
+
+  document.getElementById('insights-list').innerHTML = insights.length
+    ? insights.map(renderInsight).join('')
+    : '<div class="empty"><div class="empty-icon">🎯</div><div class="empty-title">All metrics look healthy</div><div class="empty-sub">Keep generating data for more specific insights</div></div>';
+
+  renderNextExperiments(d);
+}
+
+function renderInsight({ sev, icon, title, text, action }) {
+  return `
+    <div class="insight insight--${sev}">
+      <div class="insight-icon">${icon}</div>
+      <div class="insight-body">
+        <div class="insight-title">${title}</div>
+        <div class="insight-text">${text}</div>
+        ${action ? `<div class="insight-action">→ ${action}</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderNextExperiments(d) {
+  const next = [
+    {
+      sev:'info', icon:'⚗️',
+      title:'Experiment: "Daily challenge" mechanic',
+      text:'Show a daily banner: "Watch 3 ads today → earn 50 bonus coins". '
+         + 'Hypothesis: goal-based earning increases sessions/day by 40% '
+         + 'and rewarded ad views by 2-3x.',
+      action:'Metric: ad_rewarded_view count per day. Control: no banner. '
+           + 'Win threshold: +25% ad views in variant after 500 sessions per arm.'
+    },
+    {
+      sev:'info', icon:'⚗️',
+      title:'Experiment: Price anchoring on paywall',
+      text:'Show "Valor normal: 1,99 €/mes" crossed out next to the yearly plan\'s 1,00 €/mes. '
+         + 'Psychological pricing: anchoring the monthly rate makes yearly feel like a steal.',
+      action:'Metric: premium_purchase / premium_open rate. Expected lift: +20-35% on yearly plan selection.'
+    },
+    {
+      sev:'info', icon:'⚗️',
+      title:'Experiment: Timer urgency on 4K modal',
+      text:'Add a 5-minute countdown: "Oferta gratuita expira en 4:32". '
+         + 'IMPORTANT: must be real (set a session flag, don\'t show again if expired). '
+         + 'Fake urgency destroys trust.',
+      action:'Metric: hd_ad_start / hd_unlock_attempt. Win threshold: +10% tap rate. '
+           + 'Exit criteria: if close rate increases >5%, kill it — users feel manipulated.'
+    },
+    {
+      sev:'info', icon:'⚗️',
+      title:'Experiment: Post-download upsell moment',
+      text:'After a successful HD download, show: "Descarga ilimitada por 1,00 €/mes — '
+         + '¿quieres eliminar los anuncios para siempre?" This is the highest-intent moment.',
+      action:'Metric: premium_open triggered with reason=post_hd_download vs organic opens. '
+           + 'Hypothesis: post-reward paywall converts 3-5x better than cold paywall.'
+    },
+  ];
+
+  document.getElementById('next-experiments').innerHTML = next.map(renderInsight).join('');
+}
+
+/* ════════════════════════════════════════════════════════
+   TABS, REFRESH, EXPORT
+   ════════════════════════════════════════════════════════ */
+
+let _d = null;
+
+function switchTab(name) {
+  document.querySelectorAll('.nav-tab').forEach((t,i) => {
+    const tabs = ['overview','funnels','ab','coins','events','insights'];
+    t.classList.toggle('active', tabs[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => {
+    p.classList.toggle('active', p.id === 'tab-'+name);
+  });
+  if (name === 'events') renderEvents(_d);
+}
+
+function refresh() {
+  _d = getData();
+  renderOverview(_d);
+  renderFunnels(_d);
+  renderAB(_d);
+  renderCoins(_d);
+  renderEvents(_d);
+  renderInsights(_d);
+  toast('Refreshed ↺');
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(_d, null, 2)], { type: 'application/json' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'wallspro-analytics-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  toast('Exported JSON ✓');
+}
+
+function confirmReset() {
+  if (!confirm('Delete ALL analytics data from this device? This cannot be undone.')) return;
+  Object.values(KEYS).forEach(k => localStorage.removeItem(k));
+  refresh();
+  toast('All data cleared');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Event listeners for event filter
+document.getElementById('ev-filter').addEventListener('input', () => renderEvents(_d));
+document.getElementById('ev-limit').addEventListener('change', () => renderEvents(_d));
+
+// Boot
+refresh();
+
+// Auto-refresh every 30 s
+setInterval(refresh, 30000);
+</script>
+</body>
+</html>

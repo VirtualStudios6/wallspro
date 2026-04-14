@@ -1,0 +1,25 @@
+{
+  "name": "wallspro",
+  "version": "1.0.0",
+  "description": "WallsPro - Fondos de pantalla",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "sync": "node build.js && npx cap sync",
+    "open:android": "npx cap open android",
+    "open:ios": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "^8.0.0",
+    "@capacitor-community/media": "^9.1.0",
+    "@capacitor/android": "^8.3.0",
+    "@capacitor/core": "^8.3.0",
+    "@capacitor/filesystem": "^8.1.2",
+    "@capacitor/ios": "^8.3.0",
+    "@capacitor/splash-screen": "^8.0.1",
+    "@capacitor/status-bar": "^8.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.3.0"
+  }
+}

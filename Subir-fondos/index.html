@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Subir Wallpaper — WallsPro</title>
+  <link rel="stylesheet" href="../Walls-Fondos/shared.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="top-bar">
+    <a class="back-btn" href="../Walls-Fondos/index.html" aria-label="Volver">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+      </svg>
+    </a>
+    <h1 class="page-title">Subir wallpaper</h1>
+    <span class="count-badge">Gratis</span>
+  </header>
+
+  <main>
+
+    <!-- DROP / PREVIEW ZONE -->
+    <div class="upload-zone" id="uploadZone">
+
+      <!-- Empty state -->
+      <div class="zone-empty" id="zoneEmpty">
+        <div class="zone-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+        <p class="zone-title">Toca para seleccionar</p>
+        <p class="zone-hint">JPG · PNG · WEBP · máx 10 MB</p>
+      </div>
+
+      <!-- Preview state -->
+      <div class="zone-preview" id="zonePreview" hidden>
+        <img id="previewImg" src="" alt="Preview del wallpaper">
+        <button type="button" class="preview-remove" id="removeBtn" aria-label="Quitar imagen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+        <div class="preview-info" id="previewInfo"></div>
+      </div>
+
+      <input type="file" id="fileInput" accept="image/*" hidden>
+    </div>
+
+    <!-- FORM -->
+    <form class="upload-form" id="uploadForm" novalidate>
+
+      <div class="field">
+        <label class="field-label" for="catSelect">Categoría</label>
+        <div class="select-wrap">
+          <select id="catSelect" class="field-select" required>
+            <option value="">Elige una categoría…</option>
+            <option value="3d">3D</option>
+            <option value="abstracto">Abstracto</option>
+            <option value="aesthetic">Aesthetic</option>
+            <option value="aiwalls">AI Walls</option>
+            <option value="amor">Amor</option>
+            <option value="animales">Animales</option>
+            <option value="anime">Anime</option>
+            <option value="carspace">Car Space</option>
+            <option value="coches">Coches</option>
+            <option value="comics">Cómics</option>
+            <option value="dark">Dark</option>
+            <option value="deporte">Deporte</option>
+            <option value="funny">Funny</option>
+            <option value="juegos">Juegos</option>
+            <option value="labubu">Labubu</option>
+            <option value="memes">Memes</option>
+            <option value="musica">Música</option>
+            <option value="neon">Neon</option>
+            <option value="paisajes">Paisajes</option>
+            <option value="random">Random</option>
+            <option value="raperos">Raperos</option>
+          </select>
+          <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="emailInput">
+          Tu correo
+          <span class="field-optional">opcional</span>
+        </label>
+        <input type="email" id="emailInput" class="field-input"
+          placeholder="te avisamos cuando se publique" autocomplete="email">
+      </div>
+
+      <p class="terms-text">
+        Al enviar confirmas que eres el autor o tienes los derechos de esta imagen y que no viola derechos de terceros.
+        <a href="../Walls-Politicas/politicas/privacy.html" target="_blank" rel="noopener">Política de privacidad</a>
+      </p>
+
+      <div class="status-msg" id="statusMsg" hidden></div>
+
+      <button type="submit" class="btn-submit" id="submitBtn" disabled>
+        <span class="btn-label" id="btnLabel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Enviar para revisión
+        </span>
+        <span class="btn-spinner" id="btnSpinner" hidden>
+          <svg viewBox="0 0 24 24" class="spinner-icon">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2.5"/>
+            <path d="M12 2a10 10 0 0 1 10 10" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          Enviando…
+        </span>
+      </button>
+
+    </form>
+
+    <!-- SUCCESS STATE -->
+    <div class="success-state" id="successState" hidden>
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h2 class="success-title">¡Recibido!</h2>
+      <p class="success-sub">Tu wallpaper está en revisión. Lo publicaremos pronto si cumple las normas.</p>
+      <button type="button" class="btn-another" id="anotherBtn">Subir otro wallpaper</button>
+      <a class="btn-home" href="../Walls-Fondos/index.html">Volver al inicio</a>
+    </div>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="../Walls-Fondos/index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>Inicio</span>
+    </a>
+    <a href="../Walls-Fondos/index.html#favs" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17.5 1.917a6.4 6.4 0 0 0-5.5 3.3 6.4 6.4 0 0 0-5.5-3.3A6.8 6.8 0 0 0 0 8.967c0 4.547 4.786 9.513 8.8 12.88a4.974 4.974 0 0 0 6.4 0C19.214 18.48 24 13.514 24 8.967a6.8 6.8 0 0 0-6.5-7.05Z"/>
+      </svg>
+      <span>Favoritos</span>
+    </a>
+    <a href="index.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      <span>Subir</span>
+    </a>
+  </nav>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

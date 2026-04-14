@@ -1,0 +1,30 @@
+# Dependencias
+node_modules/
+
+# Build output de Capacitor
+www/
+
+# Plataformas nativas (generadas por Capacitor)
+android/
+ios/
+
+# Imágenes de fondos de pantalla (activos grandes, no código)
+Walls-Fondos/**/*.jpg
+Walls-Fondos/**/*.jpeg
+Walls-Fondos/**/*.png
+Walls-Fondos/**/*.webp
+Walls-Fondos/**/*.gif
+
+# Archivos de diseño
+*.psd
+*.ai
+*.sketch
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.iml
+.gradle/
+local.properties

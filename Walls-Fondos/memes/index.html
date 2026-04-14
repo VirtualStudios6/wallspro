@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Memes — WallsPro</title>
+  <link rel="stylesheet" href="../shared.css">
+</head>
+<body>
+
+  <header class="top-bar">
+    <a class="back-btn" href="../index.html" aria-label="Volver">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+      </svg>
+    </a>
+    <h1 class="page-title">😂  Memes</h1>
+    <span class="count-badge">50 fondos</span>
+  </header>
+
+  <div class="gallery" id="gallery"></div>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Vista ampliada">
+    <button type="button" class="close-btn" id="closeBtn" aria-label="Cerrar">&#10005;</button>
+    <button type="button" class="nav-btn prev" id="prevBtn" aria-label="Anterior">&#10094;</button>
+    <img class="lightbox-media" id="lightbox-img" src="" alt="Wallpaper ampliado" crossorigin="anonymous">
+    <button type="button" class="nav-btn next" id="nextBtn" aria-label="Siguiente">&#10095;</button>
+    <div class="actions">
+      <button type="button" class="action-btn" id="like-btn" aria-pressed="false" aria-label="Me gusta" title="Me gusta">
+        <svg viewBox="0 0 24 24"><path d="M17.5 1.917a6.4 6.4 0 0 0-5.5 3.3 6.4 6.4 0 0 0-5.5-3.3A6.8 6.8 0 0 0 0 8.967c0 4.547 4.786 9.513 8.8 12.88a4.974 4.974 0 0 0 6.4 0C19.214 18.48 24 13.514 24 8.967a6.8 6.8 0 0 0-6.5-7.05Z"/></svg>
+      </button>
+      <button type="button" class="action-btn" id="download-btn" aria-label="Descargar" title="Descargar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2">
+          <path d="M12 3v13M5 14l7 7 7-7"/><path d="M3 21h18"/>
+        </svg>
+      </button>
+    </div>
+    <span class="lightbox-counter" id="lightboxCounter"></span>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="../index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>Inicio</span>
+    </a>
+    <a href="index.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+        <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+      </svg>
+      <span>Galería</span>
+    </a>
+    <a href="../../Subir-fondos/index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      <span>Subir</span>
+    </a>
+  </nav>
+
+  <script src="../category.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

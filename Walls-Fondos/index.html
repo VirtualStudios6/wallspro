@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Walls — Fondos de Pantalla HD</title>
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header class="top-header">
+    <span class="header-wordmark">Walls</span>
+    <button type="button" class="coin-badge" id="coinBadge" aria-label="Monedas" hidden>
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="#a78bfa"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke="#fff" stroke-width="2" fill="none"/></svg>
+      <span id="coinCount">0</span>
+    </button>
+    <button type="button" class="icon-btn" id="openSearch" aria-label="Buscar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="searchOverlay" hidden>
+    <div class="search-box">
+      <svg class="search-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="search" id="searchInput" placeholder="Buscar categorías..." autocomplete="off" spellcheck="false">
+      <button type="button" class="icon-btn" id="closeSearch" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main id="mainContent">
+
+    <!-- HERO: FONDO DEL DÍA -->
+    <section class="wotd-section" id="wotdSection">
+      <a class="wotd-card" id="wotdCard" href="#">
+        <img class="wotd-bg" id="wotdBg" src="" alt="">
+        <div class="wotd-overlay"></div>
+        <div class="wotd-content">
+          <span class="wotd-badge">Fondo del día</span>
+          <span class="wotd-category" id="wotdCategory"></span>
+        </div>
+        <button type="button" class="wotd-fav" id="wotdFav" aria-label="Guardar en favoritos">
+          <svg viewBox="0 0 24 24"><path d="M17.5 1.917a6.4 6.4 0 0 0-5.5 3.3 6.4 6.4 0 0 0-5.5-3.3A6.8 6.8 0 0 0 0 8.967c0 4.547 4.786 9.513 8.8 12.88a4.974 4.974 0 0 0 6.4 0C19.214 18.48 24 13.514 24 8.967a6.8 6.8 0 0 0-6.5-7.05Z"/></svg>
+        </button>
+      </a>
+    </section>
+
+    <!-- MOOD FILTERS -->
+    <div class="mood-row" id="moodRow">
+      <button type="button" class="mood-pill active" data-mood="all">Todo</button>
+      <button type="button" class="mood-pill" data-mood="dark">Dark</button>
+      <button type="button" class="mood-pill" data-mood="anime">Anime</button>
+      <button type="button" class="mood-pill" data-mood="cars">Coches</button>
+      <button type="button" class="mood-pill" data-mood="art">Arte</button>
+      <button type="button" class="mood-pill" data-mood="nature">Naturaleza</button>
+      <button type="button" class="mood-pill" data-mood="games">Juegos</button>
+      <button type="button" class="mood-pill" data-mood="live">Live</button>
+    </div>
+
+    <!-- TRENDING -->
+    <section class="section" id="trendingSection">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="section-dot section-dot--red"></span>
+          Trending
+        </h2>
+        <span class="pill" id="trendingPill">Top</span>
+      </div>
+      <div class="trending-scroll" id="trendingScroll">
+        <!-- JS populated -->
+      </div>
+    </section>
+
+    <!-- FEATURED -->
+    <section class="section" id="featuredSection">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="section-dot section-dot--purple"></span>
+          Destacados
+        </h2>
+      </div>
+      <div class="featured-scroll" id="featuredScroll">
+        <!-- JS populated -->
+      </div>
+    </section>
+
+    <!-- CATEGORIES GRID -->
+    <section class="section" id="catsSection">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="section-dot section-dot--blue"></span>
+          Categorías
+        </h2>
+        <span class="pill" id="catsPill">23</span>
+      </div>
+      <div class="cats-grid" id="catsGrid">
+        <!-- JS populated -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <a href="index.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>Inicio</span>
+    </a>
+    <a href="#" class="nav-item" id="navFavs">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17.5 1.917a6.4 6.4 0 0 0-5.5 3.3 6.4 6.4 0 0 0-5.5-3.3A6.8 6.8 0 0 0 0 8.967c0 4.547 4.786 9.513 8.8 12.88a4.974 4.974 0 0 0 6.4 0C19.214 18.48 24 13.514 24 8.967a6.8 6.8 0 0 0-6.5-7.05Z"/>
+      </svg>
+      <span>Favoritos</span>
+      <span class="nav-badge" id="navFavsBadge" hidden>0</span>
+    </a>
+    <a href="../Subir-fondos/index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      <span>Subir</span>
+    </a>
+  </nav>
+
+  <!-- FAVORITES OVERLAY -->
+  <div class="favs-overlay" id="favsOverlay" hidden>
+    <div class="favs-header">
+      <h2 class="favs-title">Mis Favoritos</h2>
+      <button type="button" class="icon-btn" id="closeFavs" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="favs-grid" id="favsGrid"></div>
+    <p class="favs-empty" id="favsEmpty" hidden>Aún no tienes favoritos.<br>Pulsa ♥ en cualquier wallpaper.</p>
+  </div>
+
+  <script src="ads/ab-test.js"></script>
+  <script src="ads/analytics.js"></script>
+  <script src="ads/coins.js"></script>
+  <script src="ads/premium.js"></script>
+  <script src="ads/ad-modal.js"></script>
+  <script src="ads/ad-service.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
