@@ -8,13 +8,6 @@ www/
 android/
 ios/
 
-# Imágenes de fondos de pantalla (activos grandes, no código)
-Walls-Fondos/**/*.jpg
-Walls-Fondos/**/*.jpeg
-Walls-Fondos/**/*.png
-Walls-Fondos/**/*.webp
-Walls-Fondos/**/*.gif
-
 # Archivos de diseño
 *.psd
 *.ai
